@@ -1,8 +1,23 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-/** 公開先のURL。独自ドメインが決まったら差し替える */
-export const SITE = "https://poker-law-quest.example.jp";
+/**
+ * 公開先のURL。sitemap・robots・canonical・OGP のURLが、すべてここから作られる。
+ *
+ * 優先順位：
+ *   1. NEXT_PUBLIC_SITE_URL      独自ドメインを使うときに設定する
+ *   2. VERCEL_PROJECT_PRODUCTION_URL   Vercel が本番ビルド時に自動で入れる
+ *   3. localhost                 手元での開発用
+ *
+ * 静的書き出しなので、この値はビルド時に埋め込まれる。
+ * ドメインを変えたら、再ビルド（再デプロイ）が必要。
+ */
+const fromVercel = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : undefined;
+
+export const SITE =
+  process.env.NEXT_PUBLIC_SITE_URL ?? fromVercel ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),

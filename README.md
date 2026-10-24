@@ -19,14 +19,25 @@ npm start       # 書き出したものをローカルで確認
 `next.config.mjs` で `output: "export"` にしてあるので、`out/` をそのまま
 Vercel / Netlify / Cloudflare Pages / S3 などどこにでも置けます。サーバーは要りません。
 
-## 公開する前にやること
+## デプロイ（Vercel）
 
-`app/layout.tsx` の `SITE` を実際のドメインに変えてください。
-`sitemap.xml`・`robots.txt`・各ページの `canonical` と OGP の URL が、この値から作られます。
-
-```ts
-export const SITE = "https://poker-law-quest.example.jp";  // ← ここ
+```bash
+npx vercel          # 初回。プレビュー環境に出る
+npx vercel --prod   # 本番へ
 ```
+
+GitHub と連携した場合は、main に push するたびに自動でデプロイされます。
+
+公開URLは `app/layout.tsx` の `SITE` が決めます。手で書き換える必要はありません。
+
+| 優先 | 変数 | いつ使われるか |
+| --- | --- | --- |
+| 1 | `NEXT_PUBLIC_SITE_URL` | 独自ドメインを使うとき、Vercel の環境変数に設定する |
+| 2 | `VERCEL_PROJECT_PRODUCTION_URL` | Vercel が本番ビルド時に自動で入れる |
+| 3 | `http://localhost:3000` | 手元での開発 |
+
+sitemap.xml・robots.txt・canonical・OGP のURLは、すべてこの値から作られます。
+静的書き出しなのでビルド時に埋め込まれます。ドメインを変えたら再デプロイしてください。
 
 ## 構成
 
