@@ -1,0 +1,482 @@
+/* ポーカー法令クエスト — デザイン定義
+   ALBERTO の青 #2A4D69 を主色にした同系2トーン＋生成り。ゴールドは使っていない。
+   ロードマップのレールは RAIL_X=22px を基準に、駅・つなぎ線・レールの位置をそろえている。 */
+/* お客さんの来店を1歩ずつたどる。HUDの店舗がチェックごとに灯り、左に道のり、右にステップ票。
+   テーマは Paper / Navy / Gold の3色のみ。 */
+:root{
+  /* ALBERTO の青 #2A4D69 を主色にした、同系2トーンの配色。
+     ゴールドは使わない。
+
+     変数名 --navy / --gold は全ファイルから参照されているのでそのまま使う。
+     意味だけ読み替える：
+       --navy      主色（濃い青）
+       --gold      明るい面の上に置くアクセント（紙・白の上で読める濃さの青）
+       --gold-soft 濃い面の上に置くアクセント（主色の上で読める明るさの青）
+     同系色なので、どちらの面に置くかで使い分けないと読めなくなる。 */
+  --paper:#F4F3EF; --white:#FFFFFF; --navy:#2A4D69; --navy-soft:#3D688A;
+  --gold:#36698F; --gold-soft:#A8C5DC; --gold-tint:#DCE8F2; --navy-tint:#E4ECF3;
+  --line:#D3D7DC; --muted:#5A6270;
+  --game:"DotGothic16","Hiragino Kaku Gothic ProN",monospace;
+  --body:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--navy);font-family:var(--body);font-size:15px;line-height:1.8;margin:0}
+.wrap{max-width:1140px;margin:0 auto;padding-block:20px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+svg.ill{display:block;fill:none;stroke:var(--navy);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+svg.ill .g{stroke:var(--gold)} svg.ill .gf{fill:var(--gold);stroke:none} svg.ill .nf{fill:var(--navy);stroke:none}
+svg.ill .pf{fill:var(--paper)} svg.ill .wf{fill:var(--white)}
+
+/* ── エマちゃん ──
+   線は currentColor。置き場所の color で navy にも gold にもなる。 */
+/* 置き場所の幅いっぱいに。.lbl svg{width:18px} 等に負けないよう個別に指定する */
+.guide svg.ema,.here svg.ema,.decl-ema svg.ema,.goal-ema svg.ema,.react svg.ema{
+  width:100%;height:auto;display:block}
+svg.ema{stroke:currentColor;stroke-width:2.6}
+svg.ema .ear-in{fill:currentColor;stroke:none}
+svg.ema .dot{fill:currentColor;stroke:none}
+svg.ema .eye{fill:none;stroke-width:2.4}
+svg.ema .ear{transition:transform .35s cubic-bezier(.2,1.5,.4,1)}
+svg.ema.mood-happy,svg.ema.mood-cheer{animation:hop .5s ease-out}
+@keyframes hop{0%{transform:translateY(0)}35%{transform:translateY(-7px)}100%{transform:translateY(0)}}
+svg.ema.mood-sad{animation:wilt .5s ease-out}
+@keyframes wilt{0%{transform:translateY(-3px)}100%{transform:translateY(0)}}
+
+/* ── HUD ── */
+.hud{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px 22px;align-items:center;
+  background:var(--navy);color:var(--paper);padding:16px 20px;border-radius:4px}
+@media (max-width:760px){.hud{grid-template-columns:auto minmax(0,1fr)}.meter{grid-column:1/-1}}
+.store{width:84px;height:72px}
+.store svg{stroke:var(--gold-soft);stroke-width:2}
+.store .win{fill:var(--navy-soft);stroke:var(--gold-soft);transition:fill .6s ease}
+.store .win.on{fill:var(--gold-soft)}
+.store .spark{stroke:var(--gold-soft);opacity:0;transform-origin:center;transform-box:fill-box}
+.store.done .spark{animation:twinkle 1.8s ease-in-out infinite}
+.store.done .spark:nth-of-type(2){animation-delay:.6s}
+.store.done .spark:nth-of-type(3){animation-delay:1.2s}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}}
+.hud .ttl{display:flex;align-items:center;gap:12px}
+.hud .guide{flex:none;width:46px;color:var(--gold-soft)}
+.hud h1{font-family:var(--game);font-weight:400;font-size:clamp(22px,4vw,32px);margin:0;letter-spacing:.06em;line-height:1.25}
+.hud .sub{font-size:12px;color:var(--gold-soft);margin:4px 0 0}
+.meter{display:flex;flex-direction:column;gap:6px;min-width:0}
+.meter .row{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;font-family:var(--game)}
+.meter .rank{font-size:18px;color:var(--gold-soft)}
+.meter .cnt{font-size:12px;color:var(--gold-soft);font-variant-numeric:tabular-nums}
+.segs{display:flex;gap:3px}
+.segs i{display:block;width:16px;height:10px;border:1.5px solid var(--gold-soft);background:transparent;transition:background .4s}
+.segs i.on{background:var(--gold-soft);border-color:var(--gold-soft)}
+.reset{font-family:var(--game);font-size:11px;background:none;border:1.5px solid var(--gold-soft);
+  color:var(--gold-soft);padding:2px 8px;cursor:pointer;border-radius:2px}
+.reset:hover,.reset:focus-visible{background:var(--gold);color:var(--navy);border-color:var(--gold);outline:none}
+
+.intro{margin:18px 0 0;display:flex;gap:10px 20px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.intro b{color:var(--navy)}
+
+.game{display:grid;grid-template-columns:minmax(0,370px) minmax(0,1fr);gap:28px;margin-top:20px;align-items:start}
+@media (max-width:840px){.game{grid-template-columns:minmax(0,1fr)}}
+
+/* ── 道のり（左のレール＋駅） ──
+   カードは線の上に乗せず、レールは常に見えるようにする。
+   RAIL_X=22px を基準に、駅・つなぎ線・レールの位置をそろえている。 */
+.map{position:relative}
+.map ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;position:relative}
+.map .rail,.map .trail{position:absolute;left:21px;width:2px;border-radius:1px;pointer-events:none}
+.map .rail{background:repeating-linear-gradient(to bottom,var(--line) 0 5px,transparent 5px 11px)}
+.map .trail{background:var(--gold);transition:height .8s ease;box-shadow:0 0 0 3px rgba(54,105,143,.12)}
+.map li{display:block;position:relative;padding-left:52px}
+
+/* 駅 */
+.station{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:50%;
+  background:var(--paper);border:2px solid var(--line);display:grid;place-items:center;z-index:2;transition:.25s}
+.station svg{width:11px;height:11px;stroke-width:3.4;stroke:var(--gold)}
+li.is-lock .station{border-style:dashed}
+li.is-open .station{border-color:var(--gold);background:var(--gold-tint);box-shadow:0 0 0 4px rgba(54,105,143,.16)}
+li.is-open .station::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold)}
+li.is-clear .station{border-color:var(--navy);background:var(--navy)}
+li.is-sel .station{box-shadow:0 0 0 5px rgba(42,77,105,.14)}
+
+/* いまいる駅には、駅の点のかわりにエマちゃんが立つ */
+li.is-here .station{opacity:0}
+.here{position:absolute;left:4px;top:50%;transform:translateY(-50%);width:36px;z-index:3;
+  color:var(--navy);pointer-events:none;animation:land .45s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes land{from{transform:translateY(-130%);opacity:0}to{transform:translateY(-50%);opacity:1}}
+.here::after{content:"いまここ";position:absolute;left:50%;top:100%;transform:translateX(-50%);
+  font-family:var(--game);font-size:9px;letter-spacing:.06em;color:var(--gold);white-space:nowrap}
+
+/* 駅からカードへのつなぎ線 */
+.node::before{content:"";position:absolute;left:-21px;top:50%;margin-top:-1px;width:21px;height:2px;
+  background:var(--line);transition:background .25s}
+li.is-open .node::before,li.is-clear .node::before{background:var(--gold)}
+
+/* START / GOAL */
+.map .cap{position:relative;padding-left:52px;height:30px;display:flex;align-items:center;
+  font-family:var(--game);font-size:11px;letter-spacing:.16em;color:var(--muted)}
+.map .cap::before{content:"";position:absolute;left:17px;top:50%;transform:translateY(-50%);
+  width:10px;height:10px;border-radius:50%;border:2px solid var(--line);background:var(--paper);z-index:2}
+.map .cap::after{content:"";position:absolute;left:21px;width:2px;
+  background:repeating-linear-gradient(to bottom,var(--line) 0 5px,transparent 5px 11px)}
+.map .cap.start::after{top:50%;bottom:0}
+.map .cap.goal::after{top:0;bottom:50%}
+.map .cap.start::before{border-color:var(--gold);background:var(--gold)}
+.map.done .cap.goal::before{border-color:var(--gold);background:var(--gold)}
+.map.done .cap.goal{color:var(--gold)}
+/* ゴールのエマちゃんは、全部そろったときだけ顔を出す */
+.goal-ema{position:absolute;left:38px;top:50%;transform:translateY(-50%);width:34px;color:var(--gold);
+  opacity:0;transition:opacity .4s}
+.map.done .goal-ema{opacity:1}
+.map.done .cap.goal{padding-left:80px}
+
+.node{position:relative;z-index:1;width:100%;display:flex;gap:12px;align-items:center;text-align:left;
+  font:inherit;color:var(--navy);background:var(--white);border:1.5px solid var(--line);border-radius:4px;
+  padding:8px 12px 8px 8px;cursor:pointer;transition:transform .15s,box-shadow .15s,background .2s}
+.node:hover:not([disabled]){transform:translateY(-2px);box-shadow:0 4px 0 var(--gold-soft)}
+.node:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.node .pic{flex:none;width:52px;height:52px;border-radius:50%;background:var(--paper);display:grid;place-items:center;
+  border:1.5px solid var(--line);position:relative}
+.node .pic svg{width:40px;height:40px}
+.node .tag{display:block;font-family:var(--game);font-size:11px;color:var(--muted);letter-spacing:.08em}
+.node .nm{display:block;font-weight:700;font-size:15px;line-height:1.35}
+.node.open{border-color:var(--gold)}
+.node.open .pic{border-color:var(--gold);background:var(--gold-tint)}
+.node.open:not(.sel) .pic{animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(54,105,143,.55)}50%{box-shadow:0 0 0 7px rgba(54,105,143,0)}}
+.node.clear{border-color:var(--navy)}
+.node.boss{border-width:2px}
+.node.boss .tag{color:var(--gold);font-weight:700}
+.node.sel{background:var(--navy);color:var(--paper);border-color:var(--navy)}
+.node.sel .tag{color:var(--gold-soft)}
+.node.sel .pic{background:var(--paper);border-color:var(--gold)}
+.node[disabled],.node.lock{cursor:not-allowed;background:transparent;border-style:dashed}
+.node[disabled] .pic svg,.node.lock .pic svg{opacity:.28}
+.node[disabled] .nm,.node.lock .nm{color:var(--muted)}
+
+/* ── ステップ票 ── */
+.panel{background:var(--white);border:1.5px solid var(--line);border-radius:4px;min-width:0;overflow:hidden}
+.panel.in .pin{animation:rise .35s ease-out both}
+.panel.in .pin:nth-child(2){animation-delay:.05s}
+.panel.in .pin:nth-child(3){animation-delay:.1s}
+.panel.in .pin:nth-child(4){animation-delay:.15s}
+.panel.in .pin:nth-child(5){animation-delay:.2s}
+.panel.in .pin:nth-child(6){animation-delay:.25s}
+.panel.in .pin:nth-child(7){animation-delay:.3s}
+@keyframes rise{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+.ptop{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;
+  padding:20px 22px;background:var(--gold-tint);border-bottom:1.5px solid var(--gold-soft)}
+@media (max-width:620px){.ptop{grid-template-columns:1fr}.ptop .big{display:none}}
+.ptop .eyebrow{font-family:var(--game);font-size:12px;letter-spacing:.1em;color:var(--muted)}
+.ptop h2{font-weight:900;font-size:clamp(22px,3.2vw,30px);margin:2px 0 6px;line-height:1.3;text-wrap:balance}
+.ptop .scene{margin:0;font-size:14px;max-width:52ch}
+.ptop .big{width:clamp(96px,16vw,140px)}
+.ptop .big svg{animation:bob 3.2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.pbody{padding:20px 22px 24px;display:flex;flex-direction:column;gap:20px}
+.lbl{display:flex;align-items:center;gap:8px;font-family:var(--game);font-size:12px;color:var(--muted);
+  letter-spacing:.1em;margin-bottom:6px}
+.lbl svg{width:18px;height:18px;stroke-width:2;flex:none}
+
+/* ── 条文の要旨と出典 ── */
+.law{border:1.5px solid var(--navy);border-radius:4px}
+.law .head{background:var(--navy);color:var(--paper);padding:8px 14px;display:flex;gap:10px;align-items:center}
+.law .head svg{width:20px;height:20px;stroke:var(--gold);flex:none}
+.law .head span{font-family:var(--game);font-size:12px;letter-spacing:.1em}
+.law .gist{padding:12px 16px 4px;margin:0}
+.cites{list-style:none;margin:0;padding:6px 16px 14px;display:flex;flex-direction:column;gap:8px}
+.cite{border-left:3px solid var(--gold);background:var(--paper);padding:8px 12px;font-size:13px;line-height:1.7}
+.cite.ind{border-left-color:var(--muted);border-left-style:dashed}
+.cite .kind{display:inline-block;font-family:var(--game);font-size:10px;letter-spacing:.08em;
+  padding:0 6px;border:1px solid currentColor;margin-right:6px;vertical-align:1px}
+.cite .kind.law{color:var(--navy)}
+.cite .kind.notice,.cite .kind.police,.cite .kind.diet{color:var(--muted)}
+.cite .kind.ind{color:var(--muted);border-style:dashed}
+.cite .lawname,.cite .art{font-weight:700}
+.cite .meta{display:block;color:var(--muted);font-size:12px}
+.cite a{color:var(--navy);text-decoration-color:var(--gold);text-underline-offset:3px;word-break:break-all}
+
+/* ── 条文そのまま ── */
+.verbatim{margin:0;border:1.5px solid var(--line);border-left:2px solid var(--navy);background:var(--paper);
+  padding:12px 16px;font-size:13.5px;line-height:1.95}
+.verbatim .src{display:block;font-family:var(--game);font-size:10.5px;letter-spacing:.08em;color:var(--muted);
+  margin-bottom:8px;padding-bottom:7px;border-bottom:1px dashed var(--line)}
+.verbatim p{margin:0 0 7px}
+.verbatim p:last-child{margin:0}
+
+.words{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.word{border:1.5px dashed var(--gold-soft);border-radius:4px;padding:8px 12px}
+.word b{display:block;font-weight:700;font-size:16px}
+.word rt{font-size:10px;color:var(--muted);font-weight:400}
+.word span{font-size:13px;color:var(--muted)}
+.kid{font-size:16px;margin:0;max-width:62ch}
+.okng{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.okng>div{border-radius:4px;padding:10px 14px}
+.okng .ok{background:var(--navy-tint)}
+.okng .ng{background:var(--white);border:1.5px solid var(--navy)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--game);font-size:13px;letter-spacing:.06em}
+.pill svg{width:18px;height:18px;stroke-width:2.6;flex:none}
+.ok .pill svg{stroke:var(--navy)}
+.ng .pill svg{stroke:var(--gold)}
+.okng ul{margin:4px 0 0;padding-left:1.1em;font-size:14px}
+.okng li{margin-bottom:4px}
+.say{background:var(--navy);color:var(--paper);border-radius:4px;padding:14px 16px}
+.say .lbl{color:var(--gold-soft)}
+.say .lbl svg{stroke:var(--gold-soft)}
+.say p{margin:0;font-size:15px}
+.say p::before{content:"「";color:var(--gold-soft)}
+.say p::after{content:"」";color:var(--gold-soft)}
+.pen{border:1.5px dashed var(--navy);border-radius:4px;padding:10px 14px;font-size:13.5px;background:var(--navy-tint)}
+.pen b{font-family:var(--game);font-weight:400;letter-spacing:.06em}
+.todo{border-left:3px solid var(--muted);background:var(--paper);padding:9px 13px;font-size:13px;color:var(--muted)}
+.todo b{font-family:var(--game);font-weight:400;color:var(--navy);letter-spacing:.06em}
+
+/* ── クイズ ── */
+.quiz{border:2px solid var(--gold);border-radius:4px;padding:14px 16px;background:var(--gold-tint)}
+.quiz .lbl{color:var(--navy)}
+.quiz .q{font-weight:700;font-size:16px;margin:0 0 10px}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{text-align:left;font:inherit;color:var(--navy);background:var(--white);border:1.5px solid var(--line);
+  border-radius:4px;padding:9px 12px;cursor:pointer;transition:background .2s,border-color .2s}
+.opt:hover:not([disabled]),.opt:focus-visible{border-color:var(--navy);outline:none}
+.opt.right{background:var(--navy);color:var(--paper);border-color:var(--navy)}
+.opt.wrong{text-decoration:line-through;color:var(--muted);border-style:dashed;animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.opt[disabled]{cursor:default}
+.fb{margin:10px 0 0;font-size:14px;min-height:1.6em}
+.fb.good{font-weight:700}
+.fb.bad{color:var(--muted)}
+.quiz .hint{margin:8px 0 0;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px}
+.quiz .hint::before{content:"";flex:none;width:14px;height:1px;background:var(--gold)}
+.quiz .lbl{justify-content:space-between}
+.quiz .react{flex:none;width:34px;color:var(--navy);margin-left:auto}
+.fbrow{display:flex;align-items:flex-start;gap:12px;margin:10px 0 0}
+.fbrow .fb{margin:0;flex:1}
+.cleared{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:14px 16px;border-radius:4px;
+  background:var(--navy);color:var(--paper);animation:stamp .45s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes stamp{from{transform:scale(1.15) rotate(-2deg);opacity:.3}to{transform:none;opacity:1}}
+.cleared .badge{width:64px;height:64px;flex:none}
+.cleared .badge svg{stroke:var(--gold-soft)}
+.cleared b{font-family:var(--game);font-weight:400;font-size:20px;letter-spacing:.08em;color:var(--gold-soft);display:block}
+.cleared span{font-size:14px}
+.next{font-family:var(--game);font-size:15px;background:var(--gold-soft);color:var(--navy);border:none;border-radius:2px;
+  padding:9px 20px;cursor:pointer;align-self:flex-start;box-shadow:0 3px 0 var(--navy);transition:transform .1s}
+.next:hover,.next:focus-visible{transform:translateY(-1px);outline:2px solid var(--navy);outline-offset:2px}
+
+/* ── クリーン店舗宣言 ── */
+.decl{border:2px solid var(--gold);border-radius:4px;padding:16px 18px;background:var(--paper)}
+/* ── リテラシーチェックの結果 ── */
+.report{border:1.5px solid var(--navy);border-radius:4px;padding:14px 16px;background:var(--white)}
+.rtop{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:0 0 14px}
+.big-score{display:flex;align-items:baseline;gap:6px;font-family:var(--game);flex:none}
+.big-score b{font-size:40px;font-weight:400;color:var(--navy);line-height:1}
+.big-score span{font-size:13px;color:var(--muted)}
+.rnote{min-width:0}
+.rnote b{display:block;font-family:var(--game);font-weight:400;font-size:15px;letter-spacing:.06em;color:var(--gold)}
+.rnote span{font-size:12.5px;color:var(--muted)}
+.report .tbl{border-color:var(--line)}
+.report table{font-size:13px}
+.report td.st{font-family:var(--game);font-size:11px;letter-spacing:.06em;color:var(--muted);white-space:nowrap}
+.report td.mk{white-space:nowrap;text-align:right}
+.report tr.weak td{background:var(--gold-tint)}
+.m{font-style:normal;font-family:var(--game);display:inline-block;min-width:1.4em;text-align:center}
+.m.ok{color:var(--navy)} .m.ng{color:var(--gold);font-weight:700} .m.no{color:var(--line)}
+.rlegend{margin:10px 0 0;font-size:12px;color:var(--muted)}
+.rweak{margin:8px 0 0;font-size:13px;border-left:3px solid var(--gold);padding:7px 12px;background:var(--gold-tint)}
+.rweak b{font-family:var(--game);font-weight:400;letter-spacing:.06em}
+
+.decl-top{display:flex;align-items:center;gap:12px;margin:0 0 10px}
+.decl-ema{flex:none;width:42px;color:var(--navy)}
+.decl h3{margin:0;font-family:var(--game);font-weight:400;font-size:16px;letter-spacing:.08em}
+.decl ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:6px}
+.decl li.off{color:var(--muted)}
+.decl li.off::after{content:"（未クリア）";font-size:12px}
+
+.deep{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
+.deep a{font-family:var(--game);font-size:12px;letter-spacing:.06em;color:var(--navy);text-decoration:none;
+  border:1.5px solid var(--line);border-radius:2px;padding:4px 10px;background:var(--paper)}
+.deep a:hover,.deep a:focus-visible{border-color:var(--gold);background:var(--gold-tint);outline:none}
+
+/* ── 付録（要確認リスト／出典一覧） ── */
+.appx{margin-top:44px;border-top:2px solid var(--navy);padding-top:0}
+.appx details{border-bottom:1px solid var(--line)}
+.appx summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none;padding:16px 2px;
+  font-family:var(--game);font-size:15px;letter-spacing:.06em}
+.appx summary::-webkit-details-marker{display:none}
+.appx summary::after{content:"＋";margin-left:auto;color:var(--gold);font-size:18px}
+.appx details[open] summary::after{content:"−"}
+.appx summary:hover,.appx summary:focus-visible{color:var(--gold);outline:none}
+.appx summary svg{width:22px;height:22px;stroke:var(--gold);stroke-width:2;flex:none}
+.appx summary .n{font-size:11px;color:var(--muted);letter-spacing:.08em}
+.appx .inner{padding:0 2px 26px}
+.appx .lead{font-size:13.5px;color:var(--muted);margin:0 0 14px;max-width:76ch}
+.tbl{overflow-x:auto;border:1.5px solid var(--line);border-radius:4px;background:var(--white)}
+.tbl table{border-collapse:collapse;width:100%;font-size:13px;line-height:1.75}
+.tbl th{font-family:var(--game);font-size:10.5px;letter-spacing:.09em;color:var(--muted);text-align:left;
+  padding:10px 12px;border-bottom:1.5px solid var(--navy);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.num{font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.tbl td.step{white-space:nowrap;font-family:var(--game);font-size:11px;letter-spacing:.06em}
+.tbl a{color:var(--navy);text-decoration-color:var(--gold);text-underline-offset:3px;word-break:break-all}
+.grp{font-family:var(--game);font-size:12px;letter-spacing:.08em;margin:22px 0 8px;
+  display:flex;align-items:center;gap:8px}
+.grp .kind{font-size:10px;letter-spacing:.08em;padding:0 6px;border:1px solid var(--muted);color:var(--muted)}
+.grp .kind.ind{border-style:dashed}
+
+.foot{margin-top:30px;font-size:12px;color:var(--muted);max-width:76ch;border-top:1px solid var(--line);padding-top:14px}
+.foot b{color:var(--navy)}
+.foot dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;margin:10px 0 0}
+.foot dt{font-family:var(--game);font-size:10.5px;letter-spacing:.08em;border:1px solid var(--muted);
+  padding:0 6px;height:fit-content;white-space:nowrap}
+.foot dd{margin:0}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ロードマップのカードは <a> になったので、リンクの装飾を打ち消す */
+.node{text-decoration:none}
+.node:hover{text-decoration:none}
+span.node{pointer-events:none}
+
+/* ── まえ／つぎのステップ ──
+   既定のリンク色のまま並べると1つの文に見えてしまうので、
+   左右に離した2枚のカードにして、向きを明示する。 */
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+@media (max-width:560px){.pager{grid-template-columns:1fr}}
+.pg{display:flex;flex-direction:column;gap:2px;padding:12px 14px;min-width:0;
+  border:1.5px solid var(--line);border-radius:4px;background:var(--white);
+  text-decoration:none;color:var(--navy);transition:transform .15s,box-shadow .15s,border-color .15s}
+.pg:hover,.pg:focus-visible{border-color:var(--gold);box-shadow:0 3px 0 var(--gold-soft);
+  transform:translateY(-2px);outline:none;text-decoration:none}
+.pg .dir{font-family:var(--game);font-size:11px;letter-spacing:.1em;color:var(--gold)}
+.pg .st{font-family:var(--game);font-size:10.5px;letter-spacing:.08em;color:var(--muted)}
+.pg .nm{font-weight:700;font-size:15px;line-height:1.4}
+.pg.next{text-align:right;align-items:flex-end}
+.pg.prev{text-align:left;align-items:flex-start}
+
+/* まだ開いていないステップは押せない。ロードマップ側の扱いと合わせる */
+.pg.lock{background:transparent;border-style:dashed;cursor:not-allowed;box-shadow:none;transform:none}
+.pg.lock .dir{color:var(--muted)}
+.pg.lock .nm{color:var(--muted)}
+.pg.lock .why{font-size:11px;color:var(--muted);margin-top:4px;
+  display:flex;align-items:center;gap:6px}
+.pg.lock .why::before{content:"";width:12px;height:1px;background:var(--line);flex:none}
+
+/* ── モード切替（運営者／お客さん） ── */
+.modesw{display:inline-flex;border:1.5px solid var(--gold-soft);border-radius:2px;overflow:hidden}
+.modesw button{font-family:var(--game);font-size:11px;letter-spacing:.06em;padding:3px 10px;
+  background:none;border:none;color:var(--gold-soft);cursor:pointer}
+.modesw button.on{background:var(--gold-soft);color:var(--navy)}
+.modesw button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.meter .cnt.alt{color:var(--paper);opacity:.85}
+.meter .cnt .dim{opacity:.6}
+.meter .cnt b.warn{color:var(--gold-soft);font-family:var(--game);font-weight:400}
+
+/* ── チェック項目 ── */
+.chk{border:1.5px solid var(--navy);border-radius:4px;padding:14px 16px;background:var(--white)}
+.chk .lbl{color:var(--navy);margin-bottom:12px}
+.chk .lbl span:first-of-type{flex:1}
+.chk-mode{font-family:var(--game);font-size:10px;letter-spacing:.08em;color:var(--muted);
+  border:1px solid var(--line);padding:1px 7px;border-radius:2px}
+.chk-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.chk-item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:start;
+  padding:10px 12px;border:1.5px solid var(--line);border-radius:4px;background:var(--paper)}
+.chk-item.yes{border-color:var(--navy);background:var(--navy-tint)}
+.chk-item.na{border-style:dashed;opacity:.62}
+.chk-item.crit.none{border-left:3px solid var(--gold)}
+.chk-box{flex:none;width:26px;height:26px;border:2px solid var(--line);border-radius:3px;
+  background:var(--white);cursor:pointer;font-size:15px;line-height:1;color:var(--navy);
+  display:grid;place-items:center;transition:.15s;font-family:var(--game)}
+.chk-box:hover{border-color:var(--gold)}
+.chk-box:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.chk-item.yes .chk-box{background:var(--navy);border-color:var(--navy);color:var(--gold)}
+.chk-item.na .chk-box{border-style:dashed;color:var(--muted)}
+.chk-body{min-width:0}
+.chk-label{margin:0;font-size:14.5px;line-height:1.65;font-weight:500}
+.chk-crit{font-family:var(--game);font-size:9.5px;letter-spacing:.08em;color:var(--gold);
+  border:1px solid var(--gold);padding:0 5px;margin-left:8px;vertical-align:2px;white-space:nowrap}
+.chk-hint{margin:4px 0 0;font-size:12.5px;color:var(--muted);line-height:1.7}
+.chk-basis{margin:4px 0 0;font-size:11.5px;color:var(--muted);font-family:var(--game);letter-spacing:.04em}
+.chk-basis a{margin-left:8px}
+.chk-state{font-family:var(--game);font-size:10.5px;letter-spacing:.06em;color:var(--muted);white-space:nowrap}
+.chk-item.yes .chk-state{color:var(--navy)}
+.chk-note{margin:12px 0 0;font-size:12.5px;color:var(--muted);line-height:1.8;
+  border-left:3px solid var(--line);padding-left:12px}
+
+/* ── クリーン判定の結果 ── */
+.rep-ema{width:48px;flex:none;color:var(--navy);margin-left:auto}
+.rep-ema svg.ema{width:100%;height:auto;display:block}
+.rfix{border:2px solid var(--gold);border-radius:4px;padding:12px 15px;background:var(--gold-tint);margin:0 0 14px}
+.rfix b{display:block;font-family:var(--game);font-weight:400;font-size:14px;letter-spacing:.06em;margin-bottom:8px}
+.rfix ul{margin:0;padding-left:1.1em;font-size:14px}
+.rfix li{margin-bottom:6px}
+.rfix .basis{display:block;font-size:11.5px;color:var(--muted);font-family:var(--game)}
+.rok{border:1.5px solid var(--navy);border-radius:4px;padding:12px 15px;background:var(--navy-tint);margin:0 0 14px}
+.rok b{display:block;font-family:var(--game);font-weight:400;font-size:14px;letter-spacing:.06em;margin-bottom:6px}
+.rok span{font-size:13px;line-height:1.8}
+.report td .na{font-size:11px;color:var(--muted)}
+
+/* 付録・ツールのような1カラムのページ */
+.page{margin-top:20px}
+.page .panel{max-width:none}
+
+
+/* ── チェックリストの法律ごとのまとまり ── */
+.chk-group{margin-top:18px}
+.chk-group:first-of-type{margin-top:0}
+.chk-gname{margin:0 0 6px;font-family:var(--game);font-weight:400;font-size:13.5px;
+  letter-spacing:.05em;color:var(--navy);padding-left:11px;border-left:3px solid var(--gold)}
+.chk-gnote{margin:0 0 10px;font-size:12.5px;line-height:1.85;color:var(--muted);padding-left:14px}
+
+/* まだクリアしていないが、順番待ちでもないステップ。押せるが静かな見た目にする */
+li.is-todo .station{border-color:var(--line)}
+li.is-todo .node::before{background:var(--line)}
+
+/* ══ 広い画面では、全体をもっと使う ══
+   画面幅に応じて3段階で広げる。
+   ただし本文の行は長くしすぎない（1行が長いと読みにくくなるため）。
+   代わりに、並べられるもの（用語・OK/NG・チェック項目・表）を多列にして余白を使う。 */
+
+@media (min-width:1200px){
+  .wrap{max-width:1280px}
+  .game{gap:32px}
+}
+
+@media (min-width:1500px){
+  .wrap{max-width:1460px}
+  .game{grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:36px}
+  .node{padding:10px 14px 10px 10px}
+  .node .nm{font-size:16px}
+  /* 余白を少し増やして、間延びして見えないようにする */
+  .ptop{padding:24px 28px}
+  .pbody{padding:24px 28px 30px;gap:22px}
+  .law .gist{padding:14px 18px 4px}
+  .cites{padding:6px 18px 16px}
+  /* 読みやすさの上限は上げるが、外しはしない */
+  .ptop .scene{max-width:62ch}
+  .kid{max-width:72ch}
+  .appx .lead{max-width:88ch}
+  .foot{max-width:92ch}
+  .verbatim{max-width:84ch}
+  .gist{max-width:88ch}
+  /* 並べられるものは、列を増やして横を使う */
+  .words{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .okng{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+}
+
+@media (min-width:1800px){
+  .wrap{max-width:1680px}
+  .game{grid-template-columns:minmax(0,430px) minmax(0,1fr);gap:44px}
+  .ptop{padding:28px 32px}
+  .pbody{padding:28px 32px 34px;gap:24px}
+  .words{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+}
+
+/* チェック項目は数が多いので、広い画面では2列に分けて縦の長さを抑える */
+@media (min-width:1600px){
+  .chk-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+  .pager{gap:16px}
+}
+
+/* 付録のページは1カラムなので、表をしっかり広げる */
+@media (min-width:1500px){
+  .page .pbody{padding:28px 32px 34px}
+}
