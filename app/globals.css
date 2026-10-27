@@ -348,6 +348,9 @@ li.is-open .node::before,li.is-clear .node::before{background:var(--gold)}
 .foot dt{font-family:var(--game);font-size:10.5px;letter-spacing:.08em;border:1px solid var(--muted);
   padding:0 6px;height:fit-content;white-space:nowrap}
 .foot dd{margin:0}
+/* リンクが増えたので、詰めずに折り返す */
+.footnav{display:flex;flex-wrap:wrap;gap:6px 18px;margin:12px 0 0}
+.footmeta{margin:8px 0 0;font-family:var(--game);font-size:11px;letter-spacing:.04em}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 
 /* ロードマップのカードは <a> になったので、リンクの装飾を打ち消す */
@@ -499,3 +502,58 @@ li.is-todo .node::before{background:var(--line)}
 @media (min-width:1500px){
   .page .pbody{padding:28px 32px 34px}
 }
+
+/* ── こんなお店は要注意（お客さん向け） ── */
+.signs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.signs li{border:1.5px solid var(--line);border-left-width:3px;border-radius:4px;padding:10px 14px;background:var(--white)}
+/* 条文からまっすぐ説明できるものだけ、主色で強調する */
+.signs li.strong{border-left-color:var(--navy);background:var(--navy-tint)}
+.sign-head{margin:0;font-weight:700;font-size:14.5px;line-height:1.6}
+.sign-tag{margin-left:8px;font-family:var(--game);font-weight:400;font-size:10.5px;letter-spacing:.06em;
+  color:var(--white);background:var(--navy);border-radius:2px;padding:2px 6px;white-space:nowrap}
+.sign-why{margin:5px 0 0;font-size:13px}
+.sign-foot{margin:6px 0 0;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;font-size:11.5px}
+.basis{font-family:var(--game);letter-spacing:.04em;color:var(--muted);font-size:11.5px}
+
+/* ── 更新履歴 ── */
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.hist li{display:flex;gap:10px;align-items:flex-start}
+.hist-kind{flex:none;margin-top:2px;font-family:var(--game);font-size:10.5px;letter-spacing:.06em;
+  border-radius:2px;padding:2px 7px;border:1.5px solid var(--line);color:var(--muted);white-space:nowrap}
+/* 法令の変更がいちばん重い。表現の変更も、読んだ時期で内容が変わるので目立たせる */
+.hist-kind.k-law{border-color:var(--navy);background:var(--navy);color:var(--white)}
+.hist-kind.k-wording{border-color:var(--navy);color:var(--navy)}
+.hist-what{margin:0;font-size:13.5px}
+.hist-why{margin:4px 0 0;font-size:12.5px;color:var(--muted)}
+
+/* ── これってOK？NG？（ケース集） ── */
+.case{border:1.5px solid var(--navy);border-radius:4px;padding:14px 16px;background:var(--white)}
+.case-q{margin:0;font-family:var(--game);font-weight:400;font-size:16px;letter-spacing:.04em;line-height:1.5}
+.case-v{margin:8px 0 0;display:inline-block;font-family:var(--game);font-size:11px;letter-spacing:.06em;
+  border-radius:2px;padding:3px 9px}
+.case-v.v-ng{background:var(--navy);color:var(--white)}
+.case-v.v-scope{background:var(--gold-tint);color:var(--navy)}
+/* 答えが出ないものは、出ないと見て分かるように破線にする */
+.case-v.v-gray{border:1.5px dashed var(--muted);color:var(--muted)}
+.case-short{margin:8px 0 0;font-size:14px;font-weight:700;line-height:1.7}
+.case-h{margin:14px 0 6px;font-family:var(--game);font-weight:400;font-size:12px;letter-spacing:.08em;color:var(--muted)}
+.case-can,.case-cannot{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:7px;font-size:13.5px}
+.case-can .basis{display:block;margin-top:2px}
+.case-cannot{color:var(--muted)}
+.case-do{margin:14px 0 0;border-left:3px solid var(--navy);background:var(--navy-tint);padding:9px 13px}
+.case-do b{font-family:var(--game);font-weight:400;letter-spacing:.06em;font-size:12.5px}
+.case-do p{margin:4px 0 0;font-size:13.5px}
+.case-steps{margin:10px 0 0;font-size:12.5px;color:var(--muted)}
+
+/* ── 都道府県の条例 ── */
+.pref{border:1.5px solid var(--navy);border-radius:4px;padding:14px 16px;background:var(--white)}
+.pref-name{margin:0;font-family:var(--game);font-weight:400;font-size:18px;letter-spacing:.08em}
+.pref-ord{margin:4px 0 0;font-size:12px;color:var(--muted)}
+.pref-links{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.pref-links a{display:inline-flex;align-items:center;gap:8px;font-size:13.5px}
+.pref-note{margin:3px 0 0;font-size:12px;color:var(--muted)}
+.pref-list{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.pref-list .basis{display:block;margin-top:2px}
+.pref-hnote{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.pref .tbl{margin-top:2px}
+.pref table{font-size:13px}

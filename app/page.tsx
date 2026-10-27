@@ -98,6 +98,19 @@ export default function Home() {
               </p>
             </section>
 
+            <section className="pin">
+              <h2 className="lbl">
+                <Small name="book" />
+                こんな読み方もできます
+              </h2>
+              <div className="deep">
+                <Link href="/signs/">こんなお店は要注意（お客さん向け）</Link>
+                <Link href="/cases/">これってOK？NG？（ケース集）</Link>
+                <Link href="/ordinances/">都道府県の条例</Link>
+                <Link href="/unconfirmed/">まだはっきりしないこと</Link>
+              </div>
+            </section>
+
             <div className="pin">
               <Link className="next" href={`/step/${STAGES[0].id}/`}>
                 はじめる ▶

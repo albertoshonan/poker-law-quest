@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { jpDate, LAST_UPDATED } from "@/lib/history";
 
 /** 全ページ共通のおことわりと、出典ラベルの凡例 */
 export function Disclaimer({ conf }: { conf: string }) {
@@ -32,8 +33,15 @@ export function Disclaimer({ conf }: { conf: string }) {
       </dl>
       <p className="footnav">
         <Link href="/">ロードマップ</Link>
+        <Link href="/signs/">こんなお店は要注意</Link>
+        <Link href="/cases/">これってOK？NG？</Link>
+        <Link href="/ordinances/">都道府県の条例</Link>
         <Link href="/unconfirmed/">まだはっきりしないこと</Link>
         <Link href="/sources/">どこに書いてある？（出典）</Link>
+        <Link href="/history/">更新履歴</Link>
+      </p>
+      <p className="footmeta">
+        最終更新日 {jpDate(LAST_UPDATED)}　・　条文確認日 {conf}
       </p>
     </div>
   );
