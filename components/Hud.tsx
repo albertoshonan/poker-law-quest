@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { N, QT, STAGES } from "@/lib/stages";
 import { cleanLabel, useProgress } from "@/lib/progress";
 import { HUD_SUB } from "@/lib/modeLabels";
@@ -36,9 +38,14 @@ function Storefront({ lit, max, allDone }: { lit: number; max: number; allDone: 
   );
 }
 
+const TITLE = "ポーカー法令クエスト";
+
 export function Hud() {
   const { ready, mode, setMode, clean, score, learned, reset } = useProgress();
   const allDone = clean.target > 0 && clean.todo === 0 && clean.criticalClear;
+  /* HUD はどのページにも出る。トップ以外では、ここがホームへの戻り口になる。
+     トップで自分自身へのリンクを出しても意味がないので、そこだけ素のままにする。 */
+  const atHome = usePathname() === "/";
 
   return (
     <header className="hud">
@@ -48,9 +55,14 @@ export function Hud() {
           <span className="guide">
             <Ema mood={allDone ? "cheer" : "idle"} />
           </span>
-          <h1>ポーカー法令クエスト</h1>
+          <h1>{atHome ? TITLE : <Link href="/">{TITLE}</Link>}</h1>
         </div>
         <p className="sub">{HUD_SUB[mode]}</p>
+        {!atHome && (
+          <Link className="tohome" href="/">
+            ← ロードマップへもどる
+          </Link>
+        )}
       </div>
 
       <div className="meter">

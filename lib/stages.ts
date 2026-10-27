@@ -72,7 +72,7 @@ export type Stage = {
   ng: string[];
   /** お店からの説明 */
   say: string;
-  /** クリーン店舗宣言の1行 */
+  /** 自己点検のまとめの1行 */
   check: string;
   /** やぶったときは */
   penalty?: string;

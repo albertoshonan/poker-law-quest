@@ -61,6 +61,14 @@ svg.ema.mood-sad{animation:wilt .5s ease-out}
 .hud .guide{flex:none;width:46px;color:var(--gold-soft)}
 .hud h1{font-family:var(--game);font-weight:400;font-size:clamp(22px,4vw,32px);margin:0;letter-spacing:.06em;line-height:1.25}
 .hud .sub{font-size:12px;color:var(--gold-soft);margin:4px 0 0}
+/* トップ以外では、題字そのものがホームへの戻り口になる（濃い面の上なので色は gold-soft 側） */
+.hud h1 a{color:inherit;text-decoration:none}
+.hud h1 a:hover,.hud h1 a:focus-visible{text-decoration:underline;text-underline-offset:4px}
+/* 題字が押せることに気づかない人のための、明示的な戻り口 */
+.tohome{display:inline-block;margin:8px 0 0;font-family:var(--game);font-size:12px;
+  letter-spacing:.06em;color:var(--gold-soft);text-decoration:none;
+  border:1.5px solid var(--gold-soft);border-radius:3px;padding:3px 10px}
+.tohome:hover,.tohome:focus-visible{background:var(--gold-soft);color:var(--navy)}
 .meter{display:flex;flex-direction:column;gap:6px;min-width:0}
 .meter .row{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;font-family:var(--game)}
 .meter .rank{font-size:18px;color:var(--gold-soft)}
@@ -262,8 +270,12 @@ li.is-open .node::before,li.is-clear .node::before{background:var(--gold)}
   padding:9px 20px;cursor:pointer;align-self:flex-start;box-shadow:0 3px 0 var(--navy);transition:transform .1s}
 .next:hover,.next:focus-visible{transform:translateY(-1px);outline:2px solid var(--navy);outline-offset:2px}
 
-/* ── クリーン店舗宣言 ── */
+/* ── 自己点検のまとめ ── */
 .decl{border:2px solid var(--gold);border-radius:4px;padding:16px 18px;background:var(--paper)}
+
+/* 判定結果に添える但し書き。見出しの横に出し、狭いときは次の行に落とす */
+.selfnote{font-family:var(--body);font-size:11.5px;letter-spacing:0;color:var(--muted);
+  font-weight:400;line-height:1.5}
 /* ── リテラシーチェックの結果 ── */
 .report{border:1.5px solid var(--navy);border-radius:4px;padding:14px 16px;background:var(--white)}
 .rtop{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:0 0 14px}
@@ -284,9 +296,16 @@ li.is-open .node::before,li.is-clear .node::before{background:var(--gold)}
 .rweak{margin:8px 0 0;font-size:13px;border-left:3px solid var(--gold);padding:7px 12px;background:var(--gold-tint)}
 .rweak b{font-family:var(--game);font-weight:400;letter-spacing:.06em}
 
-.decl-top{display:flex;align-items:center;gap:12px;margin:0 0 10px}
+/* 見出しが長くなったので、但し書きと縦に積めるよう上揃えにする */
+.decl-top{display:flex;align-items:flex-start;gap:12px;margin:0 0 10px}
 .decl-ema{flex:none;width:42px;color:var(--navy)}
-.decl h3{margin:0;font-family:var(--game);font-weight:400;font-size:16px;letter-spacing:.08em}
+.decl-head{min-width:0}
+.decl-head .selfnote{display:block;margin:2px 0 0}
+.decl h2,.decl h3{margin:0;font-family:var(--game);font-weight:400;font-size:16px;letter-spacing:.08em}
+
+/* 判定結果の見出しは「見出し＋但し書き」。狭いときは但し書きが次の行に落ちる */
+.report .lbl{flex-wrap:wrap}
+.report .lbl .selfnote{flex:1 1 100%}
 .decl ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:6px}
 .decl li.off{color:var(--muted)}
 .decl li.off::after{content:"（未クリア）";font-size:12px}

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { QT, STAGES, shortTag } from "@/lib/stages";
-import { gradeLabel, qkey, useProgress } from "@/lib/progress";
+import { gradeLabel, qkey, selfNote, useProgress } from "@/lib/progress";
 import { Ema, Small } from "./Ill";
 
 /**
@@ -91,10 +91,16 @@ export function ScoreCard() {
   );
 }
 
-/** クリーン店舗宣言。クリアした項目だけが濃く出る */
+/**
+ * 自己点検のまとめ。クリアした項目だけが濃く出る。
+ *
+ * かつては「クリーン店舗宣言」という見出しだったが、これは店が自分で点検した
+ * 結果にすぎず、適法性のお墨付きではない。言い切らず「自己点検を完了しました」
+ * までにとどめる。
+ */
 export function Declaration() {
-  const { ready, cleared, clean } = useProgress();
-  // 宣言のキャラクターは、点検がそろったときに喜ぶ（クイズの正解数ではない）
+  const { ready, mode, cleared, clean } = useProgress();
+  // キャラクターは、点検がそろったときに喜ぶ（クイズの正解数ではない）
   const allClean = clean.target > 0 && clean.todo === 0 && clean.criticalClear;
   return (
     <section className="decl pin">
@@ -102,7 +108,10 @@ export function Declaration() {
         <span className="decl-ema">
           <Ema mood={allClean ? "cheer" : "idle"} />
         </span>
-        <h2>クリーン店舗宣言</h2>
+        <div className="decl-head">
+          <h2>{allClean ? "自己点検を完了しました" : "自己点検のまとめ"}</h2>
+          <p className="selfnote">{selfNote(mode)}</p>
+        </div>
       </div>
       <ol>
         {STAGES.map((x) => (

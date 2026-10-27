@@ -134,7 +134,7 @@ export function Roadmap({ current }: { current?: string }) {
       </ol>
       <div className="cap goal">
         <span className="goal-ema">{allClean && <Ema mood="cheer" />}</span>
-        GOAL ・ クリーン店舗
+        GOAL ・ 自己点検ずみ
       </div>
     </nav>
   );

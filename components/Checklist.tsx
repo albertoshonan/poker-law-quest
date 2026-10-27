@@ -1,6 +1,6 @@
 "use client";
 
-import { GROUP_NOTE, type Check } from "@/lib/checks";
+import { checkLabel, GROUP_NOTE, type Check } from "@/lib/checks";
 import { visibleChecks, useProgress } from "@/lib/progress";
 import { Small } from "./Ill";
 
@@ -44,7 +44,7 @@ export function Checklist({ stageId }: { stageId: string }) {
         </button>
         <div className="chk-body">
           <p className="chk-label">
-            {c.label}
+            {checkLabel(c, mode)}
             {c.critical && <span className="chk-crit">必須</span>}
           </p>
           {c.hint && <p className="chk-hint">{c.hint}</p>}
@@ -83,8 +83,9 @@ export function Checklist({ stageId }: { stageId: string }) {
 
       {mode === "both" && (
         <p className="chk-note">
-          お客さんモードでは、店の外から見分けられる項目だけを出しています。
-          届出や名簿、お金の流れなど、店でないと分からない項目は運営者モードで見られます。
+          お客さんモードでは、<b>お客さんが自分の目で確かめられる項目だけ</b>を出しています。
+          届出・名簿・お金の流れのように店でないと分からないものや、ほかのお客さんの年齢、
+          照度の数値のように見ただけでは判断がつかないものは、運営者モードで見られます。
         </p>
       )}
     </section>

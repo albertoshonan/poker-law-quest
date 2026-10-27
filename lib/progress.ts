@@ -240,6 +240,18 @@ export function gradeLabel(rate: number, answered: number) {
   return "読み直してみよう";
 }
 
+/**
+ * 判定結果に必ず添える但し書き。
+ *
+ * 運営者モードは店が自分で点検した結果、お客さんモードは客が店頭で見た範囲の
+ * 確認にすぎない。どちらも適法性のお墨付きではないので、見出しの横に必ず出す。
+ */
+export function selfNote(mode: Who) {
+  return mode === "shop"
+    ? "※お店による自己点検の結果です。適法であることの保証ではありません。"
+    : "※お客さんが店頭で見える範囲で確かめた結果です。適法であることの保証ではありません。";
+}
+
 /** クリーン判定の見出し。自己点検の結果であって、適法性の保証ではない */
 export function cleanLabel(c: CleanResult) {
   if (!c.target) return "これから";

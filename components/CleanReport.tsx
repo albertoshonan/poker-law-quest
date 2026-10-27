@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { CHECKS } from "@/lib/checks";
+import { checkLabel, CHECKS } from "@/lib/checks";
 import { STAGES, shortTag } from "@/lib/stages";
-import { cleanLabel, useProgress, visibleChecks } from "@/lib/progress";
+import { cleanLabel, selfNote, useProgress, visibleChecks } from "@/lib/progress";
 import { Ema, Small } from "./Ill";
 
 /**
@@ -29,7 +29,8 @@ export function CleanReport() {
     <section className="report pin">
       <h2 className="lbl">
         <Small name="seal" />
-        クリーン判定の結果
+        <span>クリーン判定の結果</span>
+        <span className="selfnote">{selfNote(mode)}</span>
       </h2>
 
       <div className="rtop">
@@ -54,7 +55,7 @@ export function CleanReport() {
           <ul>
             {clean.openCritical.map((c) => (
               <li key={c.id}>
-                {c.label}
+                {checkLabel(c, mode)}
                 {c.basis && <span className="basis">{c.basis}</span>}
               </li>
             ))}
@@ -64,7 +65,9 @@ export function CleanReport() {
         <div className="rok">
           <b>必須の項目に、未点検はありません</b>
           <span>
-            ただしこれは<b>自己点検の集計</b>であって、適法であることの保証ではありません。
+            ただしこれは
+            <b>{mode === "shop" ? "お店による自己点検の集計" : "店頭で見える範囲の確認"}</b>
+            であって、適法であることの保証ではありません。
             公開されている資料では線が引かれていない論点も残っています。
             最終的な判断は、所轄警察署（生活安全課）と弁護士に確認してください。
           </span>

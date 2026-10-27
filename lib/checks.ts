@@ -5,17 +5,25 @@
  * 根拠（basis）はすべて、このアプリで原文確認済みの条文・通達・警察資料に対応させている。
  *
  * who:
- *   "both" … お客さんでも見分けられる（掲示、店内の様子、チップの扱いなど）
- *   "shop" … 店側でないと分からない（届出、名簿、お金の流れなど）
+ *   "both" … お客さんが自分の目で確かめられる（掲示、店内の様子、受付で受けた扱い、
+ *            チップの扱い、店頭やSNSに出ている告知など）
+ *   "shop" … 店側でないと分からない（届出、名簿、お金の流れ）か、
+ *            見ただけでは判断がつかないもの（他の客の年齢、照度の数値、法的な評価）
  * critical:
  *   これが「できていない」なら、クリーンとは言えない項目。
+ *
+ * label は店の視点（「〜している」「〜していない」）で書いてある。
+ * お客さんモードでは主語も確かめ方も変わるので、言い換えが要るものには
+ * asCustomer を持たせ、客が自分で確かめられる形に書き換える。
  */
 export type Who = "both" | "shop";
 
 export type Check = {
   id: string;
-  /** 点検する内容。「〜している」「〜していない」で書く */
+  /** 点検する内容。「〜している」「〜していない」で書く（店の視点） */
   label: string;
+  /** お客さんモードでの言い換え。客が自分の目で確かめられる形で書く */
+  asCustomer?: string;
   who: Who;
   critical?: boolean;
   /** 根拠の条文・資料 */
@@ -49,6 +57,7 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s0-1",
       label: "お客さんが現金や品物を賭けていない",
+      asCustomer: "テーブルで、現金や品物を賭けている人がいない",
       who: "both",
       critical: true,
       basis: "刑法第185条",
@@ -97,9 +106,9 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s1-5",
       label: "広告の出し方が、営業所の周りの風俗環境を害する方法になっていない",
-      who: "both",
+      who: "shop",
       basis: "風営法第16条",
-      hint: "第16条は表示の中身ではなく、広告の「方法」についての条文です。",
+      hint: "第16条は表示の中身ではなく、広告の「方法」についての条文です。害するかどうかは法的な評価なので、見ただけでは判断がつきません。",
     },
   ],
 
@@ -166,7 +175,8 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s3-4",
       label: "お客さんの年齢を、見た目でなく身分証で確かめている",
-      who: "shop",
+      asCustomer: "受付で、身分証による年齢確認をされた",
+      who: "both",
       group: "お客さんの年齢",
       basis: "風営法第22条第1項第5号（方法を定めた規定は確認できず）",
       hint: "5号営業について、お客さんの年齢確認の方法を定めた規定は見つかりませんでした。ただし確かめていなければ、18歳未満と分かっていて入れた、と見られる余地が残ります。",
@@ -174,10 +184,11 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s3-5",
       label: "20歳未満にお酒・たばこを出していない",
-      who: "both",
+      who: "shop",
       critical: true,
       group: "お客さんの年齢",
       basis: "風営法第22条第1項第6号",
+      hint: "ほかのお客さんの年齢は外から分からないので、点検できるのはお店だけです。",
     },
     {
       id: "s3-6",
@@ -232,6 +243,7 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s4-3",
       label: "店内が暗すぎない（10ルクスを下回らない）",
+      asCustomer: "店内が暗すぎない（手元のカードがはっきり見える明るさがある）",
       who: "both",
       critical: true,
       basis: "施行規則第7条（5号営業の欄）第4号／第31条第2号",
@@ -268,6 +280,7 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s5-1",
       label: "チップをお店の外に持ち出させていない",
+      asCustomer: "チップを店の外に持ち帰れる、という案内がない",
       who: "both",
       critical: true,
       basis: "風営法第23条第1項第3号（同条第3項で準用）",
@@ -275,6 +288,7 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s5-2",
       label: "「チップ○枚お預かり」という紙やカードを渡していない",
+      asCustomer: "「チップ○枚お預かり」という紙やカードを渡されていない",
       who: "both",
       critical: true,
       basis: "風営法第23条第1項第4号（同条第3項で準用）",
@@ -289,6 +303,7 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s5-4",
       label: "帰るときにチップを全部回収する運用になっている",
+      asCustomer: "帰るときに、チップを全部回収された",
       who: "both",
       basis: "上記の裏返し",
     },
@@ -298,6 +313,7 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s6-1",
       label: "順位・勝敗に応じた賞金を出していない",
+      asCustomer: "順位に応じて賞金が出る、という告知・案内がない",
       who: "both",
       critical: true,
       basis: "風営法第23条第2項／刑法第185条",
@@ -305,6 +321,7 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s6-2",
       label: "順位・勝敗に応じた物品・旅行・券を出していない",
+      asCustomer: "順位に応じて景品・旅行・券が出る、という告知・案内がない",
       who: "both",
       critical: true,
       basis: "風営法第23条第2項（大阪府警の例示）",
@@ -312,6 +329,7 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s6-3",
       label: "チップをドリンクや割引券と交換していない",
+      asCustomer: "チップをドリンクや割引券と交換できる、という案内がない",
       who: "both",
       critical: true,
       basis: "風営法第23条第2項（大阪府警の例示）",
@@ -319,6 +337,7 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s6-4",
       label: "チップを換金していない",
+      asCustomer: "チップを換金できる、という案内がない",
       who: "both",
       critical: true,
       basis: "刑法第185条（大阪府警の例示）",
@@ -394,6 +413,7 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s8-k3",
       label: "負けた参加者が、何かを失う仕組みがない（チップ・預け金・権利など）",
+      asCustomer: "負けた参加者が何かを失う仕組みが、大会の案内に書かれていない",
       who: "both",
       critical: true,
       group: "刑法 — 参加者が「得喪を争う」形になっていないか",
@@ -404,6 +424,7 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s8-f1",
       label: "大会の成績に応じて、参加者に何かが渡る仕組みがない（お金・物・券・権利など、名目を問わず）",
+      asCustomer: "大会の成績に応じて何かが渡る、という告知が案内にもSNSにもない（お金・物・券・権利など、名目を問わず）",
       who: "both",
       critical: true,
       group: "風営法 — 店が「遊技の結果に応じて賞品を提供」する形になっていないか",
@@ -413,6 +434,7 @@ export const CHECKS: Record<string, Check[]> = {
     {
       id: "s8-f2",
       label: "賞金・賞品の額や有無が、順位や勝敗で決まらない",
+      asCustomer: "順位や勝敗で賞金・賞品が決まる、という告知がない",
       who: "both",
       critical: true,
       group: "風営法 — 店が「遊技の結果に応じて賞品を提供」する形になっていないか",
@@ -510,6 +532,10 @@ export const CHECKS: Record<string, Check[]> = {
 };
 
 export const allChecks = (): Check[] => Object.values(CHECKS).flat();
+
+/** モードに応じた点検項目の文言。お客さんモードでは客の視点の言い換えを優先する */
+export const checkLabel = (c: Check, mode: Who) =>
+  mode === "both" && c.asCustomer ? c.asCustomer : c.label;
 
 export const checksFor = (stageId: string, who: Who | "all"): Check[] => {
   const list = CHECKS[stageId] ?? [];
