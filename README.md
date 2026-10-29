@@ -46,30 +46,46 @@ app/
   layout.tsx            サイト共通のメタデータ。SITE はここ
   page.tsx              トップ（3つの関門の説明とステップ一覧）
   step/[id]/page.tsx    各ステップ。generateStaticParams で10ページを静的生成
+  signs/page.tsx        こんなお店は要注意（お客さん向け）
+  cases/page.tsx        これってOK？NG？（ケース集）
+  ordinances/page.tsx   都道府県の条例。確認できた県の要点
+  unconfirmed/page.tsx  まだはっきりしないこと。件数は付録から算出
   sources/page.tsx      どこに書いてあるか（出典一覧）
-  unconfirmed/page.tsx  まだはっきりしないこと（29項目）
+  history/page.tsx      更新履歴
+  favicon.ico           ファビコン。icon.png / apple-icon.png と同じ図版
+  icon.png              512px。Next が <link rel="icon"> を自動で付ける
+  apple-icon.png        180px。ホーム画面用
   sitemap.ts robots.ts
   globals.css           デザイン定義。ALBERTO の青 #2A4D69 を主色にした同系2トーン＋生成り
 components/
   StepBody.tsx          条文・解説。サーバー描画（←検索エンジンに渡るのはここ）
+  StepHeading.tsx       ステップの見出し
   Quiz.tsx              クイズ（リテラシー＝知っているか）。クライアント
   Checklist.tsx         チェック項目（クリーン判定＝できているか）。クライアント
   CleanReport.tsx       クリーン判定の結果。クライアント
   Pager.tsx             まえ／つぎのステップ。クライアント
   Roadmap.tsx           左のレールと駅。クライアント
   Hud.tsx               店舗の明かりと進捗。クライアント
-  ScoreCard.tsx         リテラシーチェックの結果と宣言。クライアント
-  Appendix.tsx          付録の表
+  ScoreCard.tsx         リテラシーチェックの結果。クライアント
+  Appendix.tsx          付録の表。TODO_COUNT もここで算出
+  Disclaimer.tsx        各ページ下部の注意書きと出典ラベルの凡例
   Ill.tsx               ラインアートと案内役のキャラクター
 lib/
   stages.json           ステージの中身（条文・出典・クイズ）
   stages.ts             その型定義
-  appendix.json         付録の中身
-  checks.ts             チェック項目（56項目／必須39）
+  appendix.json         付録の中身（まだはっきりしないこと／出典一覧）
+  checks.ts             チェック項目（55項目／必須38）
+  cases.ts              ケース集
+  signs.ts              要注意サイン
+  ordinances.ts         条例を確認できた県の中身
+  history.ts            更新履歴
   modeLabels.ts         運営者／お客さんモードの言い換え
   illustrations.ts      ラインアートのパス
   progress.ts           進捗・リテラシー・クリーン判定の共有ストア
 ```
+
+件数（チェック項目・まだはっきりしないこと・クイズ数）は、すべてデータから
+算出して表示しています。文章の中に数字を書き足さないでください。ずれます。
 
 ## 中身を直すとき
 

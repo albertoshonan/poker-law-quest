@@ -315,7 +315,7 @@ li.is-open .node::before,li.is-clear .node::before{background:var(--gold)}
   border:1.5px solid var(--line);border-radius:2px;padding:4px 10px;background:var(--paper)}
 .deep a:hover,.deep a:focus-visible{border-color:var(--gold);background:var(--gold-tint);outline:none}
 
-/* ── 付録（要確認リスト／出典一覧） ── */
+/* ── 付録（まだはっきりしないこと／出典一覧） ── */
 .appx{margin-top:44px;border-top:2px solid var(--navy);padding-top:0}
 .appx details{border-bottom:1px solid var(--line)}
 .appx summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none;padding:16px 2px;

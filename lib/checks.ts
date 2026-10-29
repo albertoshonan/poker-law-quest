@@ -243,7 +243,7 @@ export const CHECKS: Record<string, Check[]> = {
     },
     {
       id: "s4-3",
-      label: "店内が暗すぎない（10ルクスを下回らない）",
+      label: "店内が暗すぎない（照度を10ルクス以下にしていない）",
       asCustomer: "店内が暗すぎない（手元のカードがはっきり見える明るさがある）",
       who: "both",
       critical: true,
@@ -251,7 +251,8 @@ export const CHECKS: Record<string, Check[]> = {
     },
     {
       id: "s4-4",
-      label: "お札を入れる装置や、現金・商品券などを出す装置のついた遊技設備がない",
+      label: "お札を入れる装置や、現金・有価証券（商品券など）を出す装置のついた遊技設備がない",
+      asCustomer: "お札を入れる装置や、現金・商品券などが出てくる装置のついた台がない",
       who: "both",
       critical: true,
       basis: "施行規則第7条（5号営業の欄）第6号",
@@ -368,14 +369,8 @@ export const CHECKS: Record<string, Check[]> = {
       critical: true,
       basis: "刑法第185条",
     },
-    {
-      id: "s7-2",
-      label: "参加費を集めて、勝った人に分配していない",
-      who: "shop",
-      critical: true,
-      basis: "刑法第186条第2項",
-      hint: "賭博場開張等図利罪は罰金がなく、3月以上5年以下の拘禁刑です。",
-    },
+    /* 「参加費を集めて、勝った人に分配していない」は STEP 8 の s8-k2 に置いてある。
+       参加費が出てくるのは大会の場面なので、刑法のまとまりがある向こうで一度だけ聞く。 */
     {
       id: "s7-3",
       label: "スタッフが、賭けに気づいたときに止める手順を知っている",
