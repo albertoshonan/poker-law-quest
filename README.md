@@ -28,10 +28,11 @@ npx vercel --prod   # 本番へ
 
 GitHub と連携した場合は、main に push するたびに自動でデプロイされます。
 
-`vercel.json` で出力先を `out` に固定しています。これがないと Vercel が既定の
-`public/` を探しにいき、「No Output Directory named "public" found」でビルドが
-失敗します（2026年10月29日に実際に起きました）。ダッシュボードの設定でも直せますが、
-リポジトリに書いておけば誰が引き継いでも同じ結果になります。
+**`vercel.json` で `outputDirectory` を指定しないでください。** Vercel の Next.js
+プリセットは `output: "export"` を自分で解釈して `out/` を配信します。よかれと思って
+`{"outputDirectory": "out"}` を置くと、Vercel が `out/` の中に Next.js の内部ファイルを
+探しにいき `[NEXT_NO_ROUTES_MANIFEST] routes-manifest.json couldn't be found` で
+ビルドが落ちます（2026年10月29日に実際にやりました）。設定なしが正解です。
 
 公開URLは `app/layout.tsx` の `SITE` が決めます。手で書き換える必要はありません。
 
